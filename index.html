@@ -1,0 +1,305 @@
+<html>
+    <head>
+        <link rel= "stylesheet" href="css/bootstrap.min.css"> 
+        <link rel= "stylesheet" href="chart.css"> 
+    </head>
+    <body>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<section>
+    <div class="container-fluid">
+        <div class ="row" id="p1">
+                <div class="col-lg-5 m-3" >
+                    <h3>Welcome to NutritionIX</h3>
+                    <p id="eqp">
+                        Here, you can find out more about the contents of different food items, and you can
+                        calculate how much calories you meals consist of, and how much Carbohydrare, protein, fiber your meals have. 
+                        </p>
+                </div>
+                <div class="col-lg-7 m-1">
+                    <p><a href="#" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Want to find a more personalized data?</a></p>
+                </div>
+                </div>
+    </div>
+    <div class="container-fluid">
+        <figure class="highcharts-figure">
+            <div id="container"></div>
+            <div class="row" id="p1">
+                <p class="highcharts-description">
+                    This bar chart shows the amount of calories, cholesterol, and Fiber found in dairy products, namely Milk, Cheese, Butter,
+                     and yoghurt.
+                 </p>
+            </div>
+        </figure>
+        
+        <script>
+            itemsL = [];
+            dataL = [ 
+            {
+                name: [],  //calories
+                data: []
+            }, {
+                name: [],      //cholesterl
+                data: []
+            }, {
+                name: [],      //fiber
+                data: []
+            }
+            /*{
+                name: 'Year 1990',  //calories
+                data: [631, 727, 3202, 721]
+            }, {
+                name: 'Year 2000',      //cholesterl
+                data: [814, 841, 3714, 726]
+            }, {
+                name: 'Year 2018',      //fiber
+                data: [1276, 1007, 4561, 746]
+            }*/];
+        
+            let _data = {
+         "query":"milk, cheese, butter, yoghurt"
+        }
+                    fetch('https://trackapi.nutritionix.com/v2/natural/nutrients',{
+                        method: "POST",
+                        body: JSON.stringify(_data),
+                        headers: {"Content-Type":"application/json", "x-app-id":"ed505778", "x-app-key":"c7aa196342c8c8a25cc02e32285b9ec5"},
+                        //mode:'no-cors'
+                    })
+                    .then((response) => response.json())
+                    .then(json => {
+                        console.log(json.foods);
+                        for(let i=0;i<json.foods.length;i++){
+                            itemsL.push(json.foods[i].food_name)
+                        }
+                       // for(let j=0;j<3;j++){
+                            for(let k=0;k<4;k++){
+                                dataL[0].data[k] = json.foods[k].nf_calories;
+                                dataL[1].data[k] = json.foods[k].nf_cholesterol;
+                                dataL[2].data[k] = json.foods[k].nf_protein;
+                            }
+                            dataL[0].name = 'Calories';
+                            dataL[1].name = 'Cholesterol';
+                            dataL[2].name = 'Protein';
+                      //  }
+                        console.log(itemsL)
+                        console.log(dataL)
+                        getChart(dataL,itemsL);
+                    })
+                    .catch(err => console.log(err));
+        
+            function getChart(data1,items){
+                Highcharts.chart('container', {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'Comparison among Diatery products',
+                align: 'left'
+            },
+            subtitle: {
+                text: 'Source: <a ' +
+                    'href="https://trackapi.nutritionix.com"' +
+                    'target="_blank">nutritionix.com</a>',
+                align: 'left'
+            },
+            xAxis: {
+                categories: items,
+                title: {
+                    text: null
+                },
+                gridLineWidth: 1,
+                lineWidth: 0
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'amount in mg',
+                    align: 'high'
+                },
+                labels: {
+                    overflow: 'justify'
+                },
+                gridLineWidth: 0
+            },
+            tooltip: {
+                valueSuffix: ' milligrams'
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: '50%',
+                    dataLabels: {
+                        enabled: true
+                    },
+                    groupPadding: 0.1
+                }
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                x: -40,
+                y: 80,
+                floating: true,
+                borderWidth: 1,
+                backgroundColor:
+                    Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
+                shadow: true
+            },
+            credits: {
+                enabled: false
+            },
+            series: data1
+        });
+            }
+            //getChart(dataL,itemsL);
+            
+        
+        </script>
+        
+    </div>
+</section>
+<section id="per">
+    <div class="container-fluid">
+        <div class="row" id="p1">
+            <div class="col-lg-4">
+                <label for="exampleFormControlInput1" class="form-label">Insert the meal you you had separated by commas</label>
+                <input type="Search" id="textBox" placeholder="milk, bread, egg">
+                <button type="submit" id="btn1">Submit</button>
+            </div>
+        </div>
+    </div>
+<figure class="highcharts-figure">
+    <div id="container2"></div>
+    <p class="highcharts-description">
+  Insert the meal you had or plan to have in the text box. List the food items separated with commas, and by clicking on
+  Submit, you shall find out how much Carbohydrate, Protein, Fat, Fiber, Potassium, and Sodium your diet consists.
+    </p>
+</figure>
+
+<script>
+
+let dataP = [{
+        name: [],
+        data: [
+            { name: [], y: 0 },
+            { name: [], y: 0 },
+            { name: [], y: 0 },
+            { name: [], y: 0 },
+            { name: [], y: 0 },
+            { name: [], y: 0 }
+        ]
+    }]
+let btn1 = document.getElementById('btn1');
+btn1.addEventListener('click', calc =()=>{
+    let meal = document.getElementById('textBox').value;
+let mealD = {
+    "query":" "+ meal
+}
+let totcal = 0;
+let totcar = 0;
+let totfat = 0;
+let totfib = 0;
+let totsod = 0;
+let totpot = 0;
+let totpro = 0;
+            fetch('https://trackapi.nutritionix.com/v2/natural/nutrients',{
+                method: "POST",
+                body: JSON.stringify(mealD),
+                headers: {"Content-Type":"application/json", "x-app-id":"ed505778", "x-app-key":"c7aa196342c8c8a25cc02e32285b9ec5"},
+                //mode:'no-cors'
+            })
+            .then((response) => response.json())
+            .then(json => {
+                console.log(json.foods);
+                for(let i=0;i<json.foods.length;i++){
+                    totcal = totcal+(json.foods[i].nf_calories*(json.foods[i].serving_qty));
+                    totcar = totcar+(json.foods[i].nf_total_carbohydrate*(json.foods[i].serving_qty));
+                    totfat = totfat+(json.foods[i].nf_total_fat*(json.foods[i].serving_qty));
+                    totfib = totfib+(json.foods[i].nf_dietary_fiber*(json.foods[i].serving_qty));
+                    totsod = totsod+(json.foods[i].nf_sodium*(json.foods[i].serving_qty));
+                    totpot = totpot+(json.foods[i].nf_potassium*(json.foods[i].serving_qty));
+                    totpro = totpro+(json.foods[i].nf_protein*(json.foods[i].serving_qty));
+                }
+                console.log("this much fat: "+totfat);
+                console.log("this much Calories: "+totcal);
+                dataP[0].data[0].name = 'Carbohydrate';
+                dataP[0].data[1].name = 'Fat';
+                dataP[0].data[2].name = 'Fiber';
+                dataP[0].data[3].name = 'Sodium';
+                dataP[0].data[4].name = 'Potassium';
+                dataP[0].data[5].name = 'Protein';
+                //SETTING VALUES
+                dataP[0].data[0].y = totcar/100;
+                dataP[0].data[1].y = totfat/100;
+                dataP[0].data[2].y = totfib/100;
+                dataP[0].data[3].y = totsod/100000;
+                dataP[0].data[4].y = totpot/100000;
+                dataP[0].data[5].y = totpro/100;
+                        // Data retrieved from https://netmarketshare.com/
+// Make monochrome colors
+const colors = Highcharts.getOptions().colors.map((c, i) =>
+    // Start out with a darkened base color (negative brighten), and end
+    // up with a much brighter color
+    Highcharts.color(Highcharts.getOptions().colors[0])
+        .brighten((i - 3) / 7)
+        .get()
+);
+
+// Build the chart
+Highcharts.chart('container2', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Find out how balanced your diet consists is',
+        align: 'left'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            colors,
+            borderRadius: 5,
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b><br>{point.percentage:.1f} %',
+                distance: -50,
+                filter: {
+                    property: 'percentage',
+                    operator: '>',
+                    value: 4
+                }
+            }
+        }
+    },
+    series: dataP
+});
+
+            })
+            .catch(err => console.log(err));
+
+
+})
+
+    
+
+//getPie(dataP)
+
+
+</script>
+</section>
+    </body>
+</html>
