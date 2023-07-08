@@ -3,7 +3,7 @@
         <link rel= "stylesheet" href="css/bootstrap.min.css"> 
         <link rel= "stylesheet" href="chart.css"> 
     </head>
-    <body>
+    <body  id="body">
         <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
@@ -19,7 +19,7 @@
                         </p>
                 </div>
                 <div class="col-lg-7 m-1">
-                    <p><a href="#" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Want to find a more personalized data?</a></p>
+                    <p><a href="#per" class="link-success link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Want to find a more personalized data?</a></p>
                 </div>
                 </div>
     </div>
@@ -47,16 +47,7 @@
                 name: [],      //fiber
                 data: []
             }
-            /*{
-                name: 'Year 1990',  //calories
-                data: [631, 727, 3202, 721]
-            }, {
-                name: 'Year 2000',      //cholesterl
-                data: [814, 841, 3714, 726]
-            }, {
-                name: 'Year 2018',      //fiber
-                data: [1276, 1007, 4561, 746]
-            }*/];
+          ];
         
             let _data = {
          "query":"milk, cheese, butter, yoghurt"
@@ -153,7 +144,7 @@
             series: data1
         });
             }
-            //getChart(dataL,itemsL);
+            
             
         
         </script>
@@ -164,16 +155,16 @@
     <div class="container-fluid">
         <div class="row" id="p1">
             <div class="col-lg-4">
-                <label for="exampleFormControlInput1" class="form-label">Insert the meal you you had separated by commas</label>
-                <input type="Search" id="textBox" placeholder="milk, bread, egg">
+                <label for="exampleFormControlInput1" class="form-label"><h5 id="p1">Insert the meal you had, separated by commas</h5></label>
+                <input type="Search" id="textBox" placeholder="Eggs, Bread">
                 <button type="submit" id="btn1">Submit</button>
             </div>
         </div>
     </div>
 <figure class="highcharts-figure">
     <div id="container2"></div>
-    <p class="highcharts-description">
-  Insert the meal you had or plan to have in the text box. List the food items separated with commas, and by clicking on
+    <p class="highcharts-description" id="p1">
+ Insert the meal you had or plan to have in the text box. List the food items separated with commas, and by clicking on
   Submit, you shall find out how much Carbohydrate, Protein, Fat, Fiber, Potassium, and Sodium your diet consists.
     </p>
 </figure>
@@ -192,8 +183,14 @@ let dataP = [{
         ]
     }]
 let btn1 = document.getElementById('btn1');
-btn1.addEventListener('click', calc =()=>{
-    let meal = document.getElementById('textBox').value;
+btn1.addEventListener('click', calc =(meal)=>{
+    if(meal === undefined){
+        meal = "Eggs, Bread";
+    }
+    else{
+        meal = document.getElementById('textBox').value;
+    }
+ //meal = document.getElementById('textBox').value;
 let mealD = {
     "query":" "+ meal
 }
@@ -207,7 +204,7 @@ let totpro = 0;
             fetch('https://trackapi.nutritionix.com/v2/natural/nutrients',{
                 method: "POST",
                 body: JSON.stringify(mealD),
-                headers: {"Content-Type":"application/json", "x-app-id":"ed505778", "x-app-key":"c7aa196342c8c8a25cc02e32285b9ec5"},
+                headers: {"Content-Type":"application/json", "x-app-id":"b7381ae9", "x-app-key":"13fbb4105b529a72c165afe0347290e7"},
                 //mode:'no-cors'
             })
             .then((response) => response.json())
@@ -256,7 +253,7 @@ Highcharts.chart('container2', {
         type: 'pie'
     },
     title: {
-        text: 'Find out how balanced your diet consists is',
+        text: 'Find out how balanced your diet is',
         align: 'left'
     },
     tooltip: {
@@ -300,6 +297,146 @@ Highcharts.chart('container2', {
 
 
 </script>
+</section>
+<section id="par2">
+    <div class="container-fluid">
+        <div class="row" id="p1">
+            <div class="col-lg-5">
+                <label for="exampleFormControlInput1" class="form-label"><h5 id="p1">Insert the meal you want to search for</h5></label>
+                <input type="Search" id="textBox2" placeholder="Ex: Nutella">
+                <button type="submit" id="btn2">Submit</button>
+            </div>
+        </div>
+    </div>
+    
+    <figure class="highcharts-figure">
+        <div id="container3"></div>
+        <p class="highcharts-description" id="p1">
+    The chart to be generated shows the details of any food items you search for. It includes how much Calories, Carbohydrate, Protein, Fat, Cholesterol
+    and Fiber a certain food item includes.
+        </p>
+    </figure>
+    <script>
+        let btn2 = document.getElementById('btn2');
+        btn2.addEventListener('click',getDetail=(val)=>{
+            if(val === undefined ){
+                val = "Nutella";
+            }
+            else{
+                val = document.getElementById('textBox2').value;
+            }
+            // val = document.getElementById('textBox2').value;
+            let info =  [
+                [],
+                [],
+                [],
+                [],
+                [],
+                []
+            ]
+        
+              
+                fetch('https://trackapi.nutritionix.com/v2/search/instant?query='+val,{
+                    method: "GET",
+                    headers: {"Content-Type":"application/json", "x-app-id":"b7381ae9", "x-app-key":"13fbb4105b529a72c165afe0347290e7"},
+                })
+                .then((response) => response.json())
+                .then(json => {
+                        console.log(json.common[0].food_name);
+                        _data = {
+                            "query":json.common[0].food_name
+                        }
+                    fetch('https://trackapi.nutritionix.com/v2/natural/nutrients',{
+                    method: "POST",
+                    body: JSON.stringify(_data),
+                    headers: {"Content-Type":"application/json", "x-app-id":"b7381ae9", "x-app-key":"13fbb4105b529a72c165afe0347290e7"},
+                    //mode:'no-cors'
+                })
+                .then((response) => response.json())
+                .then(json => {
+                    console.log(json.foods);
+                    info[0][0] = 'Calories';
+                    info[0][1] = json.foods[0].nf_calories;
+                    info[1][0] = 'Cholesterol';
+                    info[1][1] = json.foods[0].nf_cholesterol;
+                    info[2][0] = 'Protein';
+                    info[2][1] = json.foods[0].nf_protein;
+                    info[3][0] = 'Carbohydrate';
+                    info[3][1] = json.foods[0].nf_total_carbohydrate;
+                    info[4][0] = 'Fat';
+                    info[4][1] = json.foods[0].nf_total_fat;
+                    info[5][0] = 'Dietary Fiber';
+                    info[5][1] = json.foods[0].nf_dietary_fiber;
+            Highcharts.chart('container3', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Nutrition Details of ' + val
+        },
+        subtitle: {
+            text: 'Source: <a href="https://trackapi.nutritionix.com" target="_blank">Nutrition Details</a>'
+        },
+        xAxis: {
+            type: 'category',
+            labels: {
+                rotation: -45,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'amount per serving(in grams)'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: val+' Content: <b>{point.y:.1f} grams</b>'
+        },
+        series: [{
+            name: 'Nutrients',
+            colors: [
+                '#9b20d9', '#9215ac', '#861ec9', '#7a17e6', '#7010f9', '#691af3'
+            ],
+            colorByPoint: true,
+            groupPadding: 0,
+            data: info,
+            dataLabels: {
+                enabled: true,
+                rotation: -90,
+                color: '#FFFFFF',
+                align: 'right',
+                format: '{point.y:.1f}', // one decimal
+                y: 10, // 10 pixels down from the top
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        }]
+    });
+       // }
+                })
+                .catch(err => console.log(err));
+    
+                })
+                .catch(err => console.log(err));
+        })
+        function getBoth(){
+            calc();
+            getDetail();
+        }
+        let bod = document.getElementById('body');
+        bod.addEventListener("load", getBoth());
+    
+    
+    </script>
 </section>
     </body>
 </html>
